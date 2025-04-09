@@ -11,7 +11,7 @@ const mockFindRecipes = async (ids) => {
       description: 'A delicious creamy pasta dish with garlic flavor',
       cookingTime: 30,
       rating: 4.8,
-      imageUrl: 'https://source.unsplash.com/random/300x200/?pasta',
+      imageUrl: 'https://gimmedelicious.com/wp-content/uploads/2024/01/Creamy-Garlic-Shrimp-Pasta-sq.jpg',
       ingredients: [
         { name: 'pasta', amount: '250', unit: 'g' },
         { name: 'heavy cream', amount: '200', unit: 'ml' },
@@ -34,7 +34,7 @@ const mockFindRecipes = async (ids) => {
       description: 'Quick and healthy stir fry with fresh vegetables',
       cookingTime: 25,
       rating: 4.6,
-      imageUrl: 'https://source.unsplash.com/random/300x200/?stir-fry',
+      imageUrl: 'https://cookingorgeous.com/wp-content/uploads/2020/12/chicken-stirfry-noodles-recipe-2-1.jpg',
       ingredients: [
         { name: 'chicken breast', amount: '300', unit: 'g' },
         { name: 'broccoli', amount: '1', unit: 'cup' },

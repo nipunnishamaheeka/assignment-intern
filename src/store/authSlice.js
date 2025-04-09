@@ -6,9 +6,9 @@ const mockUsers = [
     id: '1', 
     email: 'demo@example.com', 
     password: 'demo123', 
-    name: 'Demo User',
+    name: 'Tinu Perera',
     bio: 'I love cooking and experimenting with new recipes!',
-    avatarUrl: 'https://ui-avatars.com/api/?name=Demo+User&background=random',
+    avatarUrl: 'https://img.freepik.com/free-photo/beautiful-young-woman-wearing-professional-makeup_23-2150165307.jpg?semt=ais_country_boost&w=740',
     favorites: ['1', '3']
   }
 ];

@@ -48,7 +48,7 @@ import {
 import { fetchRecipeById } from '../store/recipeSlice';
 import { toggleFavorite } from '../store/favoriteSlice';
 import CookingTimer from '../components/features/CookingTimer';
-
+import SocialSharing from '../components/features/SocialSharing';
 const RecipeDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -324,11 +324,12 @@ const RecipeDetail = () => {
                         <Print />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Share recipe">
+                    <SocialSharing recipe={currentRecipe} />
+                    {/* <Tooltip title="Share recipe">
                       <IconButton>
                         <Share />
                       </IconButton>
-                    </Tooltip>
+                    </Tooltip> */}
                   </Box>
                 </Box>
                 <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.7 }}>

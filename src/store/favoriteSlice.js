@@ -1,84 +1,83 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// This is a mock API. In a real app, you would make an actual API call
-const mockFindRecipes = async (ids) => {
-  // Mock recipe data - same as in recipeSlice
-  const mockRecipes = [
-    {
-      id: '1',
-      userId: '1',
-      title: 'Creamy Garlic Pasta',
-      description: 'A delicious creamy pasta dish with garlic flavor',
-      cookingTime: 30,
-      rating: 4.8,
-      imageUrl: 'https://gimmedelicious.com/wp-content/uploads/2024/01/Creamy-Garlic-Shrimp-Pasta-sq.jpg',
-      ingredients: [
-        { name: 'pasta', amount: '250', unit: 'g' },
-        { name: 'heavy cream', amount: '200', unit: 'ml' },
-        { name: 'garlic', amount: '4', unit: 'cloves', substitutes: 'garlic powder' },
-        { name: 'parmesan cheese', amount: '50', unit: 'g' }
-      ],
-      instructions: [
-        'Boil pasta according to package instructions.',
-        'In a pan, sauté minced garlic until fragrant.',
-        'Pour in the heavy cream and let simmer for 3 minutes.',
-        'Add the drained pasta to the sauce, stir in parmesan cheese.',
-        'Season with salt and pepper to taste.'
-      ],
-      dietaryRestrictions: ['Vegetarian']
-    },
-    {
-      id: '3',
-      userId: '1',
-      title: 'Chicken Stir Fry',
-      description: 'Quick and healthy stir fry with fresh vegetables',
-      cookingTime: 25,
-      rating: 4.6,
-      imageUrl: 'https://cookingorgeous.com/wp-content/uploads/2020/12/chicken-stirfry-noodles-recipe-2-1.jpg',
-      ingredients: [
-        { name: 'chicken breast', amount: '300', unit: 'g' },
-        { name: 'broccoli', amount: '1', unit: 'cup' },
-        { name: 'carrot', amount: '1', unit: 'piece' },
-        { name: 'soy sauce', amount: '3', unit: 'tbsp', substitutes: 'tamari' },
-        { name: 'vegetable oil', amount: '1', unit: 'tbsp' }
-      ],
-      instructions: [
-        'Slice chicken breast into thin strips.',
-        'Heat oil in a wok over high heat.',
-        'Add chicken and stir-fry until no longer pink.',
-        'Add vegetables and stir-fry for 3-4 minutes.',
-        'Add soy sauce and cook for another minute.',
-        'Serve hot with rice.'
-      ],
-      dietaryRestrictions: []
-    }
-  ];
-  
-  return mockRecipes.filter(recipe => ids.includes(recipe.id));
-};
+const API_URL = 'http://localhost:3000';
 
 export const fetchFavoriteRecipes = createAsyncThunk(
   'favorites/fetchRecipes',
-  async (favoriteIds) => {
-    // In a real app, this would be an API call
-    return new Promise((resolve) => {
-      setTimeout(async () => {
-        const recipes = await mockFindRecipes(favoriteIds);
-        resolve(recipes);
-      }, 1000);
-    });
+  async (favoriteIds, { rejectWithValue }) => {
+    try {
+      // Only proceed if we have favorite ids to look up
+      if (!favoriteIds || favoriteIds.length === 0) {
+        return [];
+      }
+      
+      // Fetch all recipes data
+      const response = await fetch(`${API_URL}/recipes`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch recipes');
+      }
+      
+      const recipes = await response.json();
+      
+      // Filter recipes to only include those that match the favorite ids
+      const favoriteRecipes = recipes.filter(recipe => 
+        favoriteIds.includes(recipe.id)
+      );
+      
+      return favoriteRecipes;
+    } catch (error) {
+      return rejectWithValue(error.message || 'Failed to load favorite recipes');
+    }
+  }
+);
+
+export const updateUserFavorites = createAsyncThunk(
+  'favorites/updateUserFavorites',
+  async ({ userId, favorites }, { rejectWithValue }) => {
+    try {
+      // Get current user data
+      const userResponse = await fetch(`${API_URL}/users/${userId}`);
+      if (!userResponse.ok) {
+        throw new Error('User not found');
+      }
+      
+      const userData = await userResponse.json();
+      
+      // Update favorites
+      const updatedUser = { ...userData, favorites };
+      
+      const updateResponse = await fetch(`${API_URL}/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedUser)
+      });
+      
+      if (!updateResponse.ok) {
+        throw new Error('Failed to update favorites');
+      }
+      
+      return favorites;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
 const favoriteSlice = createSlice({
   name: 'favorites',
   initialState: {
-    favorites: ['1', '3'],  // These would come from the user object in a real app
+    favorites: [], // Will be populated from user data
     favoriteRecipes: [],
     loading: false,
     error: null
   },
   reducers: {
+    setFavorites: (state, action) => {
+      state.favorites = action.payload;
+    },
     toggleFavorite: (state, action) => {
       const recipeId = action.payload;
       if (state.favorites.includes(recipeId)) {
@@ -101,10 +100,13 @@ const favoriteSlice = createSlice({
       })
       .addCase(fetchFavoriteRecipes.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(updateUserFavorites.fulfilled, (state, action) => {
+        state.favorites = action.payload;
       });
   }
 });
 
-export const { toggleFavorite } = favoriteSlice.actions;
+export const { setFavorites, toggleFavorite } = favoriteSlice.actions;
 export default favoriteSlice.reducer;

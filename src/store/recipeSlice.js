@@ -1,147 +1,88 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-// Mock recipe data
-const mockRecipes = [
-  {
-    id: '1',
-    userId: '1',
-    title: 'Creamy Garlic Pasta',
-    description: 'A delicious creamy pasta dish with garlic flavor',
-    cookingTime: 30,
-    rating: 4.8,
-    imageUrl: 'https://gimmedelicious.com/wp-content/uploads/2024/01/Creamy-Garlic-Shrimp-Pasta-sq.jpg',
-    ingredients: [
-      { name: 'pasta', amount: '250', unit: 'g' },
-      { name: 'heavy cream', amount: '200', unit: 'ml' },
-      { name: 'garlic', amount: '4', unit: 'cloves', substitutes: 'garlic powder' },
-      { name: 'parmesan cheese', amount: '50', unit: 'g' }
-    ],
-    instructions: [
-      'Boil pasta according to package instructions.',
-      'In a pan, sauté minced garlic until fragrant.',
-      'Pour in the heavy cream and let simmer for 3 minutes.',
-      'Add the drained pasta to the sauce, stir in parmesan cheese.',
-      'Season with salt and pepper to taste.'
-    ],
-    dietaryRestrictions: ['Vegetarian']
-  },
-  {
-    id: '2',
-    userId: '2',
-    title: 'Avocado Toast',
-    description: 'Simple and nutritious breakfast',
-    cookingTime: 10,
-    rating: 4.5,
-    imageUrl: 'https://alegumeaday.com/wp-content/uploads/2024/03/Bean-avocado-toast-3.jpg',
-    ingredients: [
-      { name: 'bread', amount: '2', unit: 'slices' },
-      { name: 'avocado', amount: '1', unit: 'piece' },
-      { name: 'salt', amount: '1', unit: 'pinch' },
-      { name: 'red pepper flakes', amount: '1', unit: 'pinch', substitutes: 'black pepper' }
-    ],
-    instructions: [
-      'Toast the bread until golden brown.',
-      'Mash the avocado in a bowl with salt.',
-      'Spread the avocado mash on the toast.',
-      'Sprinkle with red pepper flakes.'
-    ],
-    dietaryRestrictions: ['Vegan', 'Vegetarian']
-  },
-  {
-    id: '3',
-    userId: '1',
-    title: 'Chicken Stir Fry',
-    description: 'Quick and healthy stir fry with fresh vegetables',
-    cookingTime: 25,
-    rating: 4.6,
-    imageUrl: 'https://cookingorgeous.com/wp-content/uploads/2020/12/chicken-stirfry-noodles-recipe-2-1.jpg',
-    ingredients: [
-      { name: 'chicken breast', amount: '300', unit: 'g' },
-      { name: 'broccoli', amount: '1', unit: 'cup' },
-      { name: 'carrot', amount: '1', unit: 'piece' },
-      { name: 'soy sauce', amount: '3', unit: 'tbsp', substitutes: 'tamari' },
-      { name: 'vegetable oil', amount: '1', unit: 'tbsp' }
-    ],
-    instructions: [
-      'Slice chicken breast into thin strips.',
-      'Heat oil in a wok over high heat.',
-      'Add chicken and stir-fry until no longer pink.',
-      'Add vegetables and stir-fry for 3-4 minutes.',
-      'Add soy sauce and cook for another minute.',
-      'Serve hot with rice.'
-    ],
-    dietaryRestrictions: []
-  }
-];
+// API base URL - replace with your json-server URL (typically http://localhost:3000)
+const API_URL = 'http://localhost:3000';
 
 export const fetchAllRecipes = createAsyncThunk(
   'recipes/fetchAll',
   async () => {
-    // In a real app, this would be an API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(mockRecipes);
-      }, 1000);
-    });
+    try {
+      const response = await fetch(`${API_URL}/recipes`);
+      if (!response.ok) throw new Error('Failed to fetch recipes');
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
   }
 );
 
 export const fetchRecipeById = createAsyncThunk(
   'recipes/fetchById',
   async (id, { rejectWithValue }) => {
-    // In a real app, this would be an API call
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const recipe = mockRecipes.find(r => r.id === id);
-        if (recipe) {
-          resolve(recipe);
-        } else {
-          reject(rejectWithValue('Recipe not found'));
-        }
-      }, 800);
-    });
+    try {
+      const response = await fetch(`${API_URL}/recipes/${id}`);
+      if (!response.ok) {
+        return rejectWithValue('Recipe not found');
+      }
+      return await response.json();
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
 export const fetchUserRecipes = createAsyncThunk(
   'recipes/fetchUserRecipes',
   async (userId) => {
-    // In a real app, this would be an API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const userRecipes = mockRecipes.filter(r => r.userId === userId);
-        resolve(userRecipes);
-      }, 800);
-    });
+    try {
+      const response = await fetch(`${API_URL}/recipes?userId=${userId}`);
+      if (!response.ok) throw new Error('Failed to fetch user recipes');
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
   }
 );
 
 export const createRecipe = createAsyncThunk(
   'recipes/create',
   async (recipeData) => {
-    // In a real app, this would be an API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newRecipe = {
-          id: Date.now().toString(),
+    try {
+      const response = await fetch(`${API_URL}/recipes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           ...recipeData,
+          id: Date.now().toString(),
           rating: 0
-        };
-        resolve(newRecipe);
-      }, 1000);
-    });
+        })
+      });
+      if (!response.ok) throw new Error('Failed to create recipe');
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
   }
 );
 
 export const updateRecipe = createAsyncThunk(
   'recipes/update',
   async (recipeData) => {
-    // In a real app, this would be an API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(recipeData);
-      }, 1000);
-    });
+    try {
+      const response = await fetch(`${API_URL}/recipes/${recipeData.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(recipeData)
+      });
+      if (!response.ok) throw new Error('Failed to update recipe');
+      return await response.json();
+    } catch (error) {
+      throw error;
+    }
   }
 );
 
@@ -181,7 +122,7 @@ const recipeSlice = createSlice({
       })
       .addCase(fetchRecipeById.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
       // Fetch User Recipes
       .addCase(fetchUserRecipes.pending, (state) => {
@@ -191,6 +132,10 @@ const recipeSlice = createSlice({
         state.loading = false;
         state.userRecipes = action.payload;
       })
+      .addCase(fetchUserRecipes.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
       // Create Recipe
       .addCase(createRecipe.pending, (state) => {
         state.loading = true;
@@ -199,6 +144,10 @@ const recipeSlice = createSlice({
         state.loading = false;
         state.recipes.push(action.payload);
         state.userRecipes.push(action.payload);
+      })
+      .addCase(createRecipe.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       })
       // Update Recipe
       .addCase(updateRecipe.pending, (state) => {
@@ -215,6 +164,10 @@ const recipeSlice = createSlice({
         if (userIndex !== -1) {
           state.userRecipes[userIndex] = action.payload;
         }
+      })
+      .addCase(updateRecipe.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   }
 });

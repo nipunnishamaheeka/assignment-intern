@@ -25,7 +25,7 @@ const Favorites = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
-    if (user && favorites.length > 0) {
+    if (user) {
       dispatch(fetchFavoriteRecipes(favorites));
     }
   }, [dispatch, favorites, user]);

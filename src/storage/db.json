@@ -1,0 +1,395 @@
+{
+  "recipes": [
+    {
+      "id": "1",
+      "userId": "1",
+      "title": "Creamy Garlic Pasta",
+      "description": "A delicious creamy pasta dish with garlic flavor that's perfect for weeknight dinners.",
+      "cookingTime": 30,
+      "difficulty": "Easy",
+      "category": "Dinner",
+      "rating": 4.8,
+      "imageUrl": "https://gimmedelicious.com/wp-content/uploads/2024/01/Creamy-Garlic-Shrimp-Pasta-sq.jpg",
+      "ingredients": [
+        {
+          "name": "pasta",
+          "amount": "250",
+          "unit": "g"
+        },
+        {
+          "name": "heavy cream",
+          "amount": "200",
+          "unit": "ml"
+        },
+        {
+          "name": "garlic",
+          "amount": "4",
+          "unit": "cloves",
+          "substitutes": "garlic powder"
+        },
+        {
+          "name": "parmesan cheese",
+          "amount": "50",
+          "unit": "g"
+        }
+      ],
+      "instructions": [
+        "Boil pasta according to package instructions.",
+        "In a pan, sauté minced garlic until fragrant.",
+        "Pour in the heavy cream and let simmer for 3 minutes.",
+        "Add the drained pasta to the sauce, stir in parmesan cheese.",
+        "Season with salt and pepper to taste."
+      ],
+      "dietary": [
+        "Vegetarian"
+      ],
+      "updatedAt": "2025-04-10T07:00:35.801Z"
+    },
+    {
+      "id": "2",
+      "userId": "2",
+      "title": "Avocado Toast",
+      "description": "Simple and nutritious breakfast that's quick to prepare and packed with healthy fats.",
+      "cookingTime": 10,
+      "difficulty": "Easy",
+      "category": "Breakfast",
+      "rating": 4.5,
+      "imageUrl": "https://alegumeaday.com/wp-content/uploads/2024/03/Bean-avocado-toast-3.jpg",
+      "ingredients": [
+        {
+          "name": "bread",
+          "amount": "2",
+          "unit": "slices"
+        },
+        {
+          "name": "avocado",
+          "amount": "1",
+          "unit": "piece"
+        },
+        {
+          "name": "salt",
+          "amount": "1",
+          "unit": "pinch"
+        },
+        {
+          "name": "red pepper flakes",
+          "amount": "1",
+          "unit": "pinch",
+          "substitutes": "black pepper"
+        }
+      ],
+      "instructions": [
+        "Toast the bread until golden brown.",
+        "Mash the avocado in a bowl with salt.",
+        "Spread the avocado mash on the toast.",
+        "Sprinkle with red pepper flakes."
+      ],
+      "dietary": [
+        "Vegan",
+        "Vegetarian"
+      ]
+    },
+    {
+      "id": "3",
+      "userId": "1",
+      "title": "Chicken Stir Fry",
+      "description": "Quick and healthy stir fry with fresh vegetables and lean protein.",
+      "cookingTime": 25,
+      "difficulty": "Medium",
+      "category": "Dinner",
+      "rating": 4.6,
+      "imageUrl": "https://cookingorgeous.com/wp-content/uploads/2020/12/chicken-stirfry-noodles-recipe-2-1.jpg",
+      "ingredients": [
+        {
+          "name": "chicken breast",
+          "amount": "300",
+          "unit": "g"
+        },
+        {
+          "name": "broccoli",
+          "amount": "1",
+          "unit": "cup"
+        },
+        {
+          "name": "carrot",
+          "amount": "1",
+          "unit": "piece"
+        },
+        {
+          "name": "soy sauce",
+          "amount": "3",
+          "unit": "tbsp",
+          "substitutes": "tamari"
+        },
+        {
+          "name": "vegetable oil",
+          "amount": "1",
+          "unit": "tbsp"
+        }
+      ],
+      "instructions": [
+        "Slice chicken breast into thin strips.",
+        "Heat oil in a wok over high heat.",
+        "Add chicken and stir-fry until no longer pink.",
+        "Add vegetables and stir-fry for 3-4 minutes.",
+        "Add soy sauce and cook for another minute.",
+        "Serve hot with rice."
+      ],
+      "dietary": []
+    },
+    {
+      "id": "4",
+      "userId": "2",
+      "title": "Margherita Pizza",
+      "description": "A classic Italian pizza with fresh basil, mozzarella, and tomato sauce.",
+      "cookingTime": 35,
+      "difficulty": "Medium",
+      "category": "Pizza",
+      "rating": 4.9,
+      "imageUrl": "https://www.acouplecooks.com/wp-content/uploads/2018/10/Margherita-Pizza-018.jpg",
+      "ingredients": [
+        {
+          "name": "pizza dough",
+          "amount": "1",
+          "unit": "ball"
+        },
+        {
+          "name": "tomato sauce",
+          "amount": "100",
+          "unit": "ml"
+        },
+        {
+          "name": "fresh mozzarella",
+          "amount": "125",
+          "unit": "g"
+        },
+        {
+          "name": "fresh basil",
+          "amount": "10",
+          "unit": "leaves"
+        },
+        {
+          "name": "olive oil",
+          "amount": "1",
+          "unit": "tbsp"
+        }
+      ],
+      "instructions": [
+        "Preheat oven to 475°F (245°C).",
+        "Roll out pizza dough on a floured surface.",
+        "Spread tomato sauce evenly over the dough.",
+        "Tear mozzarella into pieces and distribute over the sauce.",
+        "Bake for 10-12 minutes until crust is golden.",
+        "Top with fresh basil leaves and a drizzle of olive oil."
+      ],
+      "dietary": [
+        "Vegetarian"
+      ]
+    },
+    {
+      "id": "5",
+      "userId": "1",
+      "title": "Breakfast Burrito",
+      "description": "Hearty breakfast burrito filled with eggs, beans, and cheese to start your day right.",
+      "cookingTime": 20,
+      "difficulty": "Easy",
+      "category": "Breakfast",
+      "rating": 4.7,
+      "imageUrl": "https://embed.widencdn.net/img/beef/zopl0jn4vy/exact/Beef%20Breakfast%20Burritos%2002.PNG?keep=c&u=7fueml",
+      "ingredients": [
+        {
+          "name": "flour tortillas",
+          "amount": "2",
+          "unit": "large"
+        },
+        {
+          "name": "eggs",
+          "amount": "4",
+          "unit": "large"
+        },
+        {
+          "name": "black beans",
+          "amount": "3",
+          "unit": "cup"
+        },
+        {
+          "name": "cheddar cheese",
+          "amount": "4",
+          "unit": "cup",
+          "substitutes": "monterey jack"
+        },
+        {
+          "name": "salsa",
+          "amount": "2",
+          "unit": "tbsp"
+        }
+      ],
+      "instructions": [
+        "Scramble eggs in a pan over medium heat.",
+        "Warm beans in a separate small pan.",
+        "Heat tortillas briefly in a dry pan or microwave.",
+        "Layer eggs, beans, and cheese on each tortilla.",
+        "Top with salsa and roll up tightly.",
+        "Return wrapped burrito to pan to toast seam side down if desired."
+      ],
+      "dietary": [],
+      "updatedAt": "2025-04-10T06:59:38.986Z"
+    },
+    {
+      "id": "6",
+      "userId": "2",
+      "title": "Beef Burger",
+      "description": "Classic juicy beef burger with all the fixings for a perfect fast food experience at home.",
+      "cookingTime": 25,
+      "difficulty": "Medium",
+      "category": "Fast Food",
+      "rating": 4.8,
+      "imageUrl": "https://www.seriouseats.com/thmb/QA0u8bsFPNs3jJjzohYQ8xjIgO8=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__recipes__images__2014__09__20140918-jamie-olivers-comfort-food-insanity-burger-david-loftus-f7d9042bdc2a468fbbd50b10d467dafd.jpg",
+      "ingredients": [
+        {
+          "name": "ground beef",
+          "amount": "500",
+          "unit": "g"
+        },
+        {
+          "name": "burger buns",
+          "amount": "4",
+          "unit": "pieces"
+        },
+        {
+          "name": "lettuce",
+          "amount": "4",
+          "unit": "leaves"
+        },
+        {
+          "name": "tomato",
+          "amount": "1",
+          "unit": "large"
+        },
+        {
+          "name": "onion",
+          "amount": "1",
+          "unit": "medium"
+        },
+        {
+          "name": "cheddar cheese",
+          "amount": "4",
+          "unit": "slices"
+        }
+      ],
+      "instructions": [
+        "Divide beef into 4 equal portions and form into patties.",
+        "Season patties with salt and pepper on both sides.",
+        "Cook on medium-high heat for 3-4 minutes per side.",
+        "Add cheese slices during the last minute of cooking.",
+        "Toast buns lightly on the cut side.",
+        "Assemble burgers with lettuce, tomato, onion, and your favorite condiments."
+      ],
+      "dietary": []
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "email": "demo@example.com",
+      "password": "demo123",
+      "name": "ammakt siri ",
+      "bio": "I love cooking and experimenting with new recipes!",
+      "avatarUrl": "https://img.freepik.com/free-photo/beautiful-young-woman-wearing-professional-makeup_23-2150165307.jpg?semt=ais_country_boost&w=740",
+      "favorites": [
+        "1",
+        "3"
+      ]
+    }
+  ],
+  "favorites": [
+    {
+      "id": "1",
+      "userId": "1",
+      "title": "Creamy Garlic Pasta",
+      "description": "A delicious creamy pasta dish with garlic flavor",
+      "cookingTime": 30,
+      "rating": 4.8,
+      "imageUrl": "https://gimmedelicious.com/wp-content/uploads/2024/01/Creamy-Garlic-Shrimp-Pasta-sq.jpg",
+      "ingredients": [
+        {
+          "name": "pasta",
+          "amount": "250",
+          "unit": "g"
+        },
+        {
+          "name": "heavy cream",
+          "amount": "200",
+          "unit": "ml"
+        },
+        {
+          "name": "garlic",
+          "amount": "4",
+          "unit": "cloves",
+          "substitutes": "garlic powder"
+        },
+        {
+          "name": "parmesan cheese",
+          "amount": "50",
+          "unit": "g"
+        }
+      ],
+      "instructions": [
+        "Boil pasta according to package instructions.",
+        "In a pan, sauté minced garlic until fragrant.",
+        "Pour in the heavy cream and let simmer for 3 minutes.",
+        "Add the drained pasta to the sauce, stir in parmesan cheese.",
+        "Season with salt and pepper to taste."
+      ],
+      "dietaryRestrictions": [
+        "Vegetarian"
+      ]
+    },
+    {
+      "id": "3",
+      "userId": "1",
+      "title": "Chicken Stir Fry",
+      "description": "Quick and healthy stir fry with fresh vegetables",
+      "cookingTime": 25,
+      "rating": 4.6,
+      "imageUrl": "https://cookingorgeous.com/wp-content/uploads/2020/12/chicken-stirfry-noodles-recipe-2-1.jpg",
+      "ingredients": [
+        {
+          "name": "chicken breast",
+          "amount": "300",
+          "unit": "g"
+        },
+        {
+          "name": "broccoli",
+          "amount": "1",
+          "unit": "cup"
+        },
+        {
+          "name": "carrot",
+          "amount": "1",
+          "unit": "piece"
+        },
+        {
+          "name": "soy sauce",
+          "amount": "3",
+          "unit": "tbsp",
+          "substitutes": "tamari"
+        },
+        {
+          "name": "vegetable oil",
+          "amount": "1",
+          "unit": "tbsp"
+        }
+      ],
+      "instructions": [
+        "Slice chicken breast into thin strips.",
+        "Heat oil in a wok over high heat.",
+        "Add chicken and stir-fry until no longer pink.",
+        "Add vegetables and stir-fry for 3-4 minutes.",
+        "Add soy sauce and cook for another minute.",
+        "Serve hot with rice."
+      ],
+      "dietaryRestrictions": []
+    }
+  ]
+}

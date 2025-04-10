@@ -17,7 +17,9 @@ import {
   Drawer,
   Card,
   CardActionArea,
-  Avatar
+  Avatar,
+  useTheme,
+  alpha
 } from '@mui/material';
 import { 
   Search as SearchIcon,
@@ -36,6 +38,7 @@ import {
 import RecipeCard from '../components/recipes/RecipeCard';
 import FilterPanel from '../components/features/Filter';
 import { fetchAllRecipes } from '../store/recipeSlice';
+import { useTheme as useAppTheme } from '../components/features/ThemeProvider';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -49,6 +52,10 @@ const Home = () => {
     searchTerm: ''
   });
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+  
+  // Add theme hooks for dark mode detection
+  const theme = useTheme();
+  const { darkMode } = useAppTheme();
 
   useEffect(() => {
     dispatch(fetchAllRecipes());
@@ -73,24 +80,20 @@ const Home = () => {
 
   // Apply all filters to recipes
   const filteredRecipes = recipes.filter(recipe => {
-    // Filter by search term (title or ingredients)
+    // ...existing filtering logic...
     const matchesSearch = searchTerm === '' || 
       recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       recipe.ingredients.some(ing => ing.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    // Filter by dietary restrictions
     const matchesDietary = filters.dietary.length === 0 || 
       filters.dietary.every(diet => recipe.dietary && recipe.dietary.includes(diet));
     
-    // Filter by cooking time
     const cookingTimeInRange = 
       recipe.cookingTime >= filters.cookingTime[0] && 
       recipe.cookingTime <= filters.cookingTime[1];
     
-    // Filter by difficulty
     const matchesDifficulty = !filters.difficulty || recipe.difficulty === filters.difficulty;
     
-    // Filter by category
     const matchesCategory = selectedCategory === 'Trending' || recipe.category === selectedCategory;
     
     return matchesSearch && matchesDietary && cookingTimeInRange && matchesDifficulty && matchesCategory;
@@ -113,14 +116,18 @@ const Home = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 0 }}>
-      {/* Hero section */}
+      {/* Hero section - Fixed for dark mode */}
       <Box 
         sx={{ 
           mb: 2, 
           p: 4, 
           borderRadius: 4,
-          background: 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)',
-          boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.05)'
+          background: darkMode 
+            ? 'linear-gradient(145deg, #1e1e1e 0%, #2d2d2d 100%)'
+            : 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)',
+          boxShadow: darkMode
+            ? '0px 10px 30px rgba(0, 0, 0, 0.3)'
+            : '0px 10px 30px rgba(0, 0, 0, 0.05)'
         }}
       >
         <Typography 
@@ -129,7 +136,9 @@ const Home = () => {
           sx={{ 
             fontWeight: 800,
             mb: 2,
-            background: 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)',
+            background: darkMode
+              ? 'linear-gradient(90deg, #90caf9 0%, #42a5f5 100%)'
+              : 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)',
             backgroundClip: 'text',
             textFillColor: 'transparent',
             WebkitBackgroundClip: 'text',
@@ -138,7 +147,7 @@ const Home = () => {
         >
           Discover Delicious Recipes
         </Typography>
-        <Typography variant="h6" color="text.secondary" sx={{  mb: 4, fontWeight: 400 }}>
+        <Typography variant="h6" color="text.secondary" sx={{ mb: 4, fontWeight: 400 }}>
           Find and explore thousands of tasty recipes for any meal, occasion, or dietary preference.
         </Typography>
 
@@ -150,8 +159,10 @@ const Home = () => {
             p: 0.5,
             pl: 2,
             borderRadius: 8,
-            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.08)',
-            // maxWidth: 600,
+            boxShadow: darkMode
+              ? '0 8px 20px rgba(0, 0, 0, 0.3)'
+              : '0 8px 20px rgba(0, 0, 0, 0.08)',
+            bgcolor: 'background.paper'
           }}
         >
           <TextField
@@ -188,55 +199,65 @@ const Home = () => {
         </Paper>
       </Box>
 
-      {/* Categories section */}
-<Box sx={{ mb: 3 }}>
-  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
-    Categories
-  </Typography>
-  <Grid container spacing={1}>
-    {categories.map((category) => (
-      <Grid item xs={4} sm={3} key={category.label}>
-        <Card 
-          elevation={0}
-          sx={{ 
-            borderRadius: 2,
-            transition: 'all 0.2s ease',
-            border: selectedCategory === category.label ? '1px solid #1976d2' : '1px solid #e0e0e0',
-            backgroundColor: selectedCategory === category.label ? '#e3f2fd' : 'white',
-          }}
-        >
-          <CardActionArea 
-            sx={{ 
-              py: 1.5, 
-              px: 1, 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center',
-              minHeight: '60px'
-            }}
-            onClick={() => handleCategorySelect(category.label)}
-          >
-            <Box sx={{ fontSize: '18px', mb: 0.5, color: selectedCategory === category.label ? 'primary.main' : 'text.secondary' }}>
-              {category.icon}
-            </Box>
-            <Typography 
-              variant="body2" 
-              component="span"
-              sx={{ 
-                fontWeight: selectedCategory === category.label ? 600 : 400,
-                color: selectedCategory === category.label ? 'primary.main' : 'text.primary',
-                textAlign: 'center',
-                lineHeight: 1.2
-              }}
-            >
-              {category.label}
-            </Typography>
-          </CardActionArea>
-        </Card>
-      </Grid>
-    ))}
-  </Grid>
-</Box>
+      {/* Categories section - Fixed for dark mode */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+          Categories
+        </Typography>
+        <Grid container spacing={1}>
+          {categories.map((category) => (
+            <Grid item xs={4} sm={3} key={category.label}>
+              <Card 
+                elevation={0}
+                sx={{ 
+                  borderRadius: 2,
+                  transition: 'all 0.2s ease',
+                  border: selectedCategory === category.label 
+                    ? `1px solid ${theme.palette.primary.main}` 
+                    : `1px solid ${theme.palette.divider}`,
+                  backgroundColor: selectedCategory === category.label 
+                    ? (darkMode ? alpha(theme.palette.primary.main, 0.2) : '#e3f2fd')
+                    : theme.palette.background.paper,
+                }}
+              >
+                <CardActionArea 
+                  sx={{ 
+                    py: 1.5, 
+                    px: 1, 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center',
+                    minHeight: '60px'
+                  }}
+                  onClick={() => handleCategorySelect(category.label)}
+                >
+                  <Box sx={{ 
+                    fontSize: '18px', 
+                    mb: 0.5, 
+                    color: selectedCategory === category.label 
+                      ? 'primary.main' 
+                      : 'text.secondary' 
+                  }}>
+                    {category.icon}
+                  </Box>
+                  <Typography 
+                    variant="body2" 
+                    component="span"
+                    sx={{ 
+                      fontWeight: selectedCategory === category.label ? 600 : 400,
+                      color: selectedCategory === category.label ? 'primary.main' : 'text.primary',
+                      textAlign: 'center',
+                      lineHeight: 1.2
+                    }}
+                  >
+                    {category.label}
+                  </Typography>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
       {/* Active filters */}
       {(filters.dietary.length > 0 || filters.difficulty || filters.cookingTime[0] > 0 || filters.cookingTime[1] < 120) && (
@@ -326,7 +347,9 @@ const Home = () => {
             sx={{ 
               my: 2, 
               borderRadius: 3,
-              boxShadow: '0 4px 12px rgba(211, 47, 47, 0.2)'
+              boxShadow: darkMode
+                ? '0 4px 12px rgba(255, 0, 0, 0.2)'
+                : '0 4px 12px rgba(211, 47, 47, 0.2)'
             }}
           >
             {error}
@@ -351,8 +374,12 @@ const Home = () => {
                       py: 8,
                       px: 4,
                       borderRadius: 4,
-                      boxShadow: '0 6px 24px rgba(0, 0, 0, 0.05)',
-                      background: 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)'
+                      boxShadow: darkMode
+                        ? '0 6px 24px rgba(0, 0, 0, 0.2)'
+                        : '0 6px 24px rgba(0, 0, 0, 0.05)',
+                      background: darkMode
+                        ? 'linear-gradient(145deg, #1e1e1e 0%, #2d2d2d 100%)'
+                        : 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)'
                     }}
                   >
                     <RestaurantMenu sx={{ fontSize: 80, color: 'text.disabled', mb: 2, opacity: 0.6 }} />

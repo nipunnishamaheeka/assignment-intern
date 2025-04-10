@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
-  Box, 
-  Container, 
-  Typography, 
+  Box,
+  Container,
+  Typography,
   CircularProgress,
-  InputBase,
   Paper,
   Fade,
   Chip,
   IconButton,
   Divider,
   Grid,
-  useTheme,
-  useMediaQuery,
-  InputAdornment,
   TextField,
   Alert,
-  styled
+  Button,
+  Drawer,
+  Card,
+  CardActionArea,
+  Avatar
 } from '@mui/material';
 import { 
   Search as SearchIcon,
@@ -27,68 +27,28 @@ import {
   LocalPizza,
   Restaurant,
   FreeBreakfast,
-  Clear
+  Clear,
+  FilterList,
+  Timer,
+  SoupKitchen,
+  EggAlt
 } from '@mui/icons-material';
 import RecipeCard from '../components/recipes/RecipeCard';
+import FilterPanel from '../components/features/Filter';
 import { fetchAllRecipes } from '../store/recipeSlice';
-
-// Styled components
-const SearchBar = styled(Paper)(({ theme }) => ({
-  padding: '2px 12px',
-  display: 'flex',
-  alignItems: 'center',
-  borderRadius: 50,
-  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-  transition: 'all 0.3s ease',
-  '&:hover, &:focus-within': {
-    boxShadow: '0 6px 24px rgba(0, 0, 0, 0.12)',
-    transform: 'translateY(-2px)'
-  }
-}));
-
-const CategoryChip = styled(Chip)(({ theme, selected }) => ({
-  margin: theme.spacing(0.5),
-  transition: 'all 0.2s ease',
-  fontWeight: selected ? 600 : 400,
-  '&:hover': {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 3px 8px rgba(0, 0, 0, 0.1)'
-  }
-}));
-
-const PageTitle = styled(Typography)(({ theme }) => ({
-  position: 'relative',
-  display: 'inline-block',
-  fontWeight: 700,
-  '&::after': {
-    content: '""',
-    position: 'absolute',
-    bottom: -8,
-    left: 0,
-    width: 60,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: theme.palette.primary.main
-  }
-}));
-
-const categories = [
-  { label: 'Trending', icon: <TrendingUp fontSize="small" /> },
-  { label: 'Breakfast', icon: <FreeBreakfast fontSize="small" /> },
-  { label: 'Lunch', icon: <Restaurant fontSize="small" /> },
-  { label: 'Dinner', icon: <RestaurantMenu fontSize="small" /> },
-  { label: 'Fast Food', icon: <Fastfood fontSize="small" /> },
-  { label: 'Pizza', icon: <LocalPizza fontSize="small" /> }
-];
 
 const Home = () => {
   const dispatch = useDispatch();
   const { recipes, loading, error } = useSelector((state) => state.recipes);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Trending');
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
+  const [filters, setFilters] = useState({
+    dietary: [],
+    cookingTime: [0, 120],
+    difficulty: '',
+    searchTerm: ''
+  });
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchAllRecipes());
@@ -96,137 +56,387 @@ const Home = () => {
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
-    // In a real app, you might dispatch an action to filter by category
   };
 
   const handleClearSearch = () => {
     setSearchTerm('');
   };
 
-  const filteredRecipes = recipes.filter(recipe =>
-    recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    recipe.ingredients.some(ing => ing.name.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-  //maxWidth="sm" sx={{ py: 8, height: '100vh', display: 'flex', alignItems: 'center' }}
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+    setFilterDrawerOpen(false);
+  };
+
+  const toggleFilterDrawer = () => {
+    setFilterDrawerOpen(!filterDrawerOpen);
+  };
+
+  // Apply all filters to recipes
+  const filteredRecipes = recipes.filter(recipe => {
+    // Filter by search term (title or ingredients)
+    const matchesSearch = searchTerm === '' || 
+      recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      recipe.ingredients.some(ing => ing.name.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    // Filter by dietary restrictions
+    const matchesDietary = filters.dietary.length === 0 || 
+      filters.dietary.every(diet => recipe.dietary && recipe.dietary.includes(diet));
+    
+    // Filter by cooking time
+    const cookingTimeInRange = 
+      recipe.cookingTime >= filters.cookingTime[0] && 
+      recipe.cookingTime <= filters.cookingTime[1];
+    
+    // Filter by difficulty
+    const matchesDifficulty = !filters.difficulty || recipe.difficulty === filters.difficulty;
+    
+    // Filter by category
+    const matchesCategory = selectedCategory === 'Trending' || recipe.category === selectedCategory;
+    
+    return matchesSearch && matchesDietary && cookingTimeInRange && matchesDifficulty && matchesCategory;
+  });
+
+  const categories = [
+    { label: 'Trending', icon: <TrendingUp /> },
+    { label: 'Breakfast', icon: <FreeBreakfast /> },
+    { label: 'Lunch', icon: <Restaurant /> },
+    { label: 'Dinner', icon: <RestaurantMenu /> },
+    { label: 'Fast Food', icon: <Fastfood /> },
+    { label: 'Pizza', icon: <LocalPizza /> }
+  ];
+
+  const activeFiltersCount = [
+    filters.dietary.length > 0,
+    filters.difficulty !== '',
+    (filters.cookingTime[0] > 0 || filters.cookingTime[1] < 120)
+  ].filter(Boolean).length;
+
   return (
-    <Container maxWidth="lg" sx={{ py: 8, height: '100vh', alignItems: 'center' }}>
-      <Box sx={{ mb: 6 }}>
-        <PageTitle variant={isMobile ? "h5" : "h4"} component="h1" sx={{ mb: 2 }}>
+    <Container maxWidth="lg" sx={{ py: 0 }}>
+      {/* Hero section */}
+      <Box 
+        sx={{ 
+          mb: 2, 
+          p: 4, 
+          borderRadius: 4,
+          background: 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)',
+          boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.05)'
+        }}
+      >
+        <Typography 
+          variant="h3" 
+          component="h1" 
+          sx={{ 
+            fontWeight: 800,
+            mb: 2,
+            background: 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)',
+            backgroundClip: 'text',
+            textFillColor: 'transparent',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
           Discover Delicious Recipes
-        </PageTitle>
-        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600 }}>
+        </Typography>
+        <Typography variant="h6" color="text.secondary" sx={{  mb: 4, fontWeight: 400 }}>
           Find and explore thousands of tasty recipes for any meal, occasion, or dietary preference.
         </Typography>
-      </Box>
 
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: { xs: 'column', md: 'row' }, 
-        justifyContent: 'space-between',
-        alignItems: { xs: 'stretch', md: 'center' },
-        gap: 2,
-        mb: 4 
-      }}>
-        <TextField
-          fullWidth
-          placeholder="Search recipes or ingredients..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+        {/* Search bar */}
+        <Paper 
+          elevation={0} 
           sx={{ 
-            maxWidth: { xs: '100%', md: '400px' },
-            '& .MuiOutlinedInput-root': {
-              borderRadius: 50,
-              pl: 1
-            }
+            display: 'flex',
+            p: 0.5,
+            pl: 2,
+            borderRadius: 8,
+            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.08)',
+            // maxWidth: 600,
           }}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon color="action" />
-              </InputAdornment>
-            ),
-            endAdornment: searchTerm && (
-              <InputAdornment position="end">
+        >
+          <TextField
+            fullWidth
+            placeholder="Search recipes or ingredients..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            variant="standard"
+            InputProps={{
+              disableUnderline: true,
+              startAdornment: (
+                <SearchIcon color="action" sx={{ mr: 1 }} />
+              ),
+              endAdornment: searchTerm && (
                 <IconButton size="small" onClick={handleClearSearch}>
                   <Clear fontSize="small" />
                 </IconButton>
-              </InputAdornment>
-            )
-          }}
-        />
-
-        <Box sx={{ 
-          overflow: 'auto', 
-          whiteSpace: 'nowrap',
-          py: 1,
-          '&::-webkit-scrollbar': { height: 6 },
-          '&::-webkit-scrollbar-thumb': { background: theme.palette.grey[300], borderRadius: 3 }
-        }}>
-          {categories.map((category) => (
-            <CategoryChip
-              key={category.label}
-              label={category.label}
-              icon={category.icon}
-              selected={selectedCategory === category.label}
-              color={selectedCategory === category.label ? "primary" : "default"}
-              variant={selectedCategory === category.label ? "filled" : "outlined"}
-              onClick={() => handleCategorySelect(category.label)}
-              clickable
-            />
-          ))}
-        </Box>
+              )
+            }}
+          />
+          <Button 
+            variant="contained" 
+            color="primary"
+            onClick={toggleFilterDrawer}
+            startIcon={<FilterList />}
+            sx={{ 
+              borderRadius: 6,
+              px: 3,
+              py: 1.5
+            }}
+          >
+            {activeFiltersCount > 0 ? `Filters (${activeFiltersCount})` : 'Filters'}
+          </Button>
+        </Paper>
       </Box>
 
-      {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Alert severity="error" sx={{ my: 2 }}>
-          {error}
-        </Alert>
-      ) : (
-        <>
-          <Grid container spacing={3}>
-            {filteredRecipes.length > 0 ? (
-              filteredRecipes.map((recipe, index) => (
-                <Fade in={true} timeout={300 + (index * 100)} key={recipe.id}>
-                  <Grid item xs={12} sm={6} md={4}>
-                    <RecipeCard recipe={recipe} />
-                  </Grid>
-                </Fade>
-              ))
-            ) : (
-              <Grid item xs={12}>
-                <Box sx={{ 
-                  textAlign: 'center', 
-                  py: 8,
-                  bgcolor: 'background.paper', 
-                  borderRadius: 2,
-                  boxShadow: 1
-                }}>
-                  <RestaurantMenu sx={{ fontSize: 60, color: 'text.disabled', mb: 2 }} />
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No recipes found
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Try a different search term or browse categories
-                  </Typography>
-                </Box>
-              </Grid>
-            )}
-          </Grid>
-
-          {filteredRecipes.length > 0 && (
-            <Box sx={{ mt: 6, textAlign: 'center' }}>
-              <Divider sx={{ mb: 4 }} />
-              <Typography variant="body2" color="text.secondary">
-                Showing {filteredRecipes.length} of {recipes.length} recipes
-              </Typography>
+      {/* Categories section */}
+<Box sx={{ mb: 3 }}>
+  <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+    Categories
+  </Typography>
+  <Grid container spacing={1}>
+    {categories.map((category) => (
+      <Grid item xs={4} sm={3} key={category.label}>
+        <Card 
+          elevation={0}
+          sx={{ 
+            borderRadius: 2,
+            transition: 'all 0.2s ease',
+            border: selectedCategory === category.label ? '1px solid #1976d2' : '1px solid #e0e0e0',
+            backgroundColor: selectedCategory === category.label ? '#e3f2fd' : 'white',
+          }}
+        >
+          <CardActionArea 
+            sx={{ 
+              py: 1.5, 
+              px: 1, 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center',
+              minHeight: '60px'
+            }}
+            onClick={() => handleCategorySelect(category.label)}
+          >
+            <Box sx={{ fontSize: '18px', mb: 0.5, color: selectedCategory === category.label ? 'primary.main' : 'text.secondary' }}>
+              {category.icon}
             </Box>
-          )}
-        </>
+            <Typography 
+              variant="body2" 
+              component="span"
+              sx={{ 
+                fontWeight: selectedCategory === category.label ? 600 : 400,
+                color: selectedCategory === category.label ? 'primary.main' : 'text.primary',
+                textAlign: 'center',
+                lineHeight: 1.2
+              }}
+            >
+              {category.label}
+            </Typography>
+          </CardActionArea>
+        </Card>
+      </Grid>
+    ))}
+  </Grid>
+</Box>
+
+      {/* Active filters */}
+      {(filters.dietary.length > 0 || filters.difficulty || filters.cookingTime[0] > 0 || filters.cookingTime[1] < 120) && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 500 }}>
+            Active Filters
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {filters.dietary.map(diet => (
+              <Chip 
+                key={diet} 
+                label={diet.charAt(0).toUpperCase() + diet.slice(1)} 
+                onDelete={() => {
+                  setFilters(prev => ({
+                    ...prev,
+                    dietary: prev.dietary.filter(d => d !== diet)
+                  }));
+                }}
+                color="primary"
+                size="medium"
+                icon={<EggAlt />}
+                sx={{ borderRadius: 3, px: 0.5 }}
+              />
+            ))}
+            {filters.difficulty && (
+              <Chip 
+                label={`Difficulty: ${filters.difficulty}`} 
+                onDelete={() => {
+                  setFilters(prev => ({
+                    ...prev,
+                    difficulty: ''
+                  }));
+                }}
+                color="primary"
+                size="medium"
+                icon={<SoupKitchen />}
+                sx={{ borderRadius: 3, px: 0.5 }}
+              />
+            )}
+            {(filters.cookingTime[0] > 0 || filters.cookingTime[1] < 120) && (
+              <Chip 
+                label={`${filters.cookingTime[0]}-${filters.cookingTime[1]} min`} 
+                onDelete={() => {
+                  setFilters(prev => ({
+                    ...prev,
+                    cookingTime: [0, 120]
+                  }));
+                }}
+                color="primary"
+                size="medium"
+                icon={<Timer />}
+                sx={{ borderRadius: 3, px: 0.5 }}
+              />
+            )}
+            <Chip 
+              label="Clear all" 
+              onClick={() => {
+                setFilters({
+                  dietary: [],
+                  cookingTime: [0, 120],
+                  difficulty: '',
+                  searchTerm: ''
+                });
+              }}
+              size="medium"
+              variant="outlined"
+              sx={{ borderRadius: 3 }}
+            />
+          </Box>
+        </Box>
       )}
+
+      {/* Recipe results */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+          {selectedCategory} Recipes
+          {searchTerm && ` • "${searchTerm}"`}
+        </Typography>
+
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
+            <CircularProgress size={60} thickness={4} />
+          </Box>
+        ) : error ? (
+          <Alert 
+            severity="error" 
+            sx={{ 
+              my: 2, 
+              borderRadius: 3,
+              boxShadow: '0 4px 12px rgba(211, 47, 47, 0.2)'
+            }}
+          >
+            {error}
+          </Alert>
+        ) : (
+          <>
+            <Grid container spacing={3}>
+              {filteredRecipes.length > 0 ? (
+                filteredRecipes.map((recipe, index) => (
+                  <Fade in={true} timeout={300 + (index * 100)} key={recipe.id}>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <RecipeCard recipe={recipe} />
+                    </Grid>
+                  </Fade>
+                ))
+              ) : (
+                <Grid item xs={12}>
+                  <Paper 
+                    elevation={0} 
+                    sx={{ 
+                      textAlign: 'center', 
+                      py: 8,
+                      px: 4,
+                      borderRadius: 4,
+                      boxShadow: '0 6px 24px rgba(0, 0, 0, 0.05)',
+                      background: 'linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%)'
+                    }}
+                  >
+                    <RestaurantMenu sx={{ fontSize: 80, color: 'text.disabled', mb: 2, opacity: 0.6 }} />
+                    <Typography variant="h5" color="text.secondary" gutterBottom sx={{ fontWeight: 500 }}>
+                      No recipes found
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      Try adjusting your search terms or filters
+                    </Typography>
+                    <Button 
+                      variant="outlined" 
+                      color="primary" 
+                      sx={{ mt: 3, borderRadius: 6, px: 3 }}
+                      onClick={() => {
+                        setSearchTerm('');
+                        setSelectedCategory('Trending');
+                        setFilters({
+                          dietary: [],
+                          cookingTime: [0, 120],
+                          difficulty: '',
+                          searchTerm: ''
+                        });
+                      }}
+                    >
+                      Clear all filters
+                    </Button>
+                  </Paper>
+                </Grid>
+              )}
+            </Grid>
+
+            {filteredRecipes.length > 0 && (
+              <Box sx={{ mt: 6, textAlign: 'center' }}>
+                <Divider sx={{ mb: 4 }} />
+                <Typography variant="body1" color="text.secondary">
+                  Showing {filteredRecipes.length} of {recipes.length} recipes
+                </Typography>
+              </Box>
+            )}
+          </>
+        )}
+      </Box>
+
+      {/* Filter drawer */}
+      <Drawer
+        anchor="right"
+        open={filterDrawerOpen}
+        onClose={() => setFilterDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            borderTopLeftRadius: 16,
+            borderBottomLeftRadius: 16,
+            width: { xs: 300, sm: 400 },
+          }
+        }}
+      >
+        <Box sx={{ p: 3 }}>
+          <Typography variant="h5" sx={{ mb: 4, fontWeight: 600 }}>
+            Filter Recipes
+          </Typography>
+          <FilterPanel
+            currentFilters={filters}
+            onFilterChange={handleFilterChange}
+          />
+          <Box sx={{ display: 'flex', gap: 2, mt: 4 }}>
+            <Button 
+              variant="outlined" 
+              fullWidth
+              onClick={() => setFilterDrawerOpen(false)}
+              sx={{ borderRadius: 6, py: 1.5 }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="contained" 
+              fullWidth
+              onClick={() => handleFilterChange(filters)}
+              sx={{ borderRadius: 6, py: 1.5 }}
+            >
+              Apply Filters
+            </Button>
+          </Box>
+        </Box>
+      </Drawer>
     </Container>
   );
 };

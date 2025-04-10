@@ -36,7 +36,7 @@ import {
   EggAlt
 } from '@mui/icons-material';
 import RecipeCard from '../components/recipes/RecipeCard';
-import FilterPanel from '../components/features/Filter';
+import FilterPanel from '../components/filters/Filter';
 import { fetchAllRecipes } from '../store/recipeSlice';
 import { useTheme as useAppTheme } from '../components/features/ThemeProvider';
 

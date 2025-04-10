@@ -45,7 +45,7 @@ import {
   NavigateNext,
   CheckCircle
 } from '@mui/icons-material';
-import { fetchRecipeById } from '../store/recipeSlice';
+import { fetchRecipeById, deleteRecipe } from '../store/recipeSlice';
 import { toggleFavorite } from '../store/favoriteSlice';
 import CookingTimer from '../components/features/CookingTimer';
 import SocialSharing from '../components/features/SocialSharing';
@@ -88,6 +88,7 @@ const RecipeDetail = () => {
 
   const confirmDelete = () => {
     // Dispatch delete action and redirect
+    dispatch(deleteRecipe(currentRecipe.id));
     setDeleteDialogOpen(false);
     navigate('/');
   };

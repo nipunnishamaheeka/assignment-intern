@@ -175,7 +175,7 @@ const CreateRecipe = () => {
     };
     
     dispatch(createRecipe(completeRecipeData)).then(() => {
-      navigate('/recipes');
+      navigate('/');
     });
   };
 

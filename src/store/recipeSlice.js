@@ -86,6 +86,25 @@ export const updateRecipe = createAsyncThunk(
   }
 );
 
+export const deleteRecipe = createAsyncThunk(
+  'recipes/deleteRecipe',
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/recipes/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete recipe');
+      }
+
+      return id;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const recipeSlice = createSlice({
   name: 'recipes',
   initialState: {
@@ -168,6 +187,21 @@ const recipeSlice = createSlice({
       .addCase(updateRecipe.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      });
+      // Delete Recipe
+      builder.addCase(deleteRecipe.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      });
+      builder.addCase(deleteRecipe.fulfilled, (state, action) => {
+        state.loading = false;
+        // Remove the deleted recipe from state
+        state.recipes = state.recipes.filter(recipe => recipe.id !== action.payload);
+        state.currentRecipe = null;
+      });
+      builder.addCase(deleteRecipe.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   }
 });

@@ -36,7 +36,7 @@ const RecipeCard = ({ recipe, loading = false }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { favorites } = useSelector((state) => state.favorites);
-  const isFavorite = favorites.includes(recipe?.id);
+  const isFavorite = favorites?.includes(recipe?.id);
 
   const handleFavoriteClick = (e) => {
     e.preventDefault();
@@ -72,9 +72,8 @@ const RecipeCard = ({ recipe, loading = false }) => {
     <Card 
       elevation={1}
       sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        height: '100%', 
+        width: 320, // Static width
+        height: 420, // Static height
         borderRadius: 2,
         transition: 'all 0.3s ease-in-out',
         ':hover': {
@@ -83,7 +82,9 @@ const RecipeCard = ({ recipe, loading = false }) => {
         },
         overflow: 'hidden',
         backgroundColor: theme.palette.background.paper,
-        position: 'relative'
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
       {/* Favorite button - positioned absolutely over the image */}
@@ -98,7 +99,7 @@ const RecipeCard = ({ recipe, loading = false }) => {
           ':hover': {
             backgroundColor: alpha(theme.palette.background.paper, 0.9),
           },
-          zIndex: 2,
+          zIndex: 10,
           boxShadow: theme.shadows[2]
         }}
         color={isFavorite ? "error" : "default"}
@@ -120,7 +121,7 @@ const RecipeCard = ({ recipe, loading = false }) => {
             position: 'absolute',
             top: 8,
             left: 8,
-            zIndex: 2,
+            zIndex: 10,
             backgroundColor: alpha(theme.palette.background.paper, 0.85),
             fontWeight: 500,
             fontSize: '0.7rem',
@@ -129,57 +130,78 @@ const RecipeCard = ({ recipe, loading = false }) => {
         />
       )}
 
+      {/* Image container with fixed dimensions */}
+      <Box 
+        sx={{ 
+          position: 'relative',
+          height: 160,
+          width: '100%',
+          overflow: 'hidden'
+        }}
+      >
+        <CardMedia
+          component="img"
+          image={recipe.imageUrl || 'https://source.unsplash.com/random/320x160/?food'}
+          alt={recipe.title}
+          sx={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center',
+            transition: 'transform 0.4s ease',
+            '&:hover': {
+              transform: 'scale(1.08)'
+            }
+          }}
+        />
+        
+        {/* Cooking time badge */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 8,
+            right: 8,
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: alpha(theme.palette.background.paper, 0.85),
+            borderRadius: 1,
+            px: 1,
+            py: 0.5,
+            backdropFilter: 'blur(4px)',
+            zIndex: 5
+          }}
+        >
+          <AccessTime fontSize="small" sx={{ mr: 0.5, fontSize: '1rem' }} />
+          <Typography variant="caption" fontWeight="medium">
+            {recipe.cookingTime} mins
+          </Typography>
+        </Box>
+        
+        {/* Optional: Dark gradient overlay for better text visibility */}
+        <Box
+          sx={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            height: '30%',
+            background: 'linear-gradient(to top, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%)',
+            zIndex: 1
+          }}
+        />
+      </Box>
+
+      {/* Content area with fixed height */}
       <CardActionArea 
         component={RouterLink} 
         to={`/recipes/${recipe.id}`}
         sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'stretch', 
           flexGrow: 1,
-          height: '100%'
+          display: 'flex',
+          flexDirection: 'column'
         }}
       >
-        {/* Image section with gradient overlay */}
-        <Box sx={{ position: 'relative' }}>
-          <CardMedia
-            component="img"
-            height="180"
-            image={recipe.imageUrl || 'https://source.unsplash.com/random/300x200/?food'}
-            alt={recipe.title}
-            sx={{
-              height: 180,
-              objectFit: 'cover',
-              transition: 'transform 0.5s ease-in-out',
-              ':hover': {
-                transform: 'scale(1.05)'
-              }
-            }}
-          />
-          
-          {/* Cooking time badge */}
-          <Box
-            sx={{
-              position: 'absolute',
-              bottom: 8,
-              right: 8,
-              display: 'flex',
-              alignItems: 'center',
-              backgroundColor: alpha(theme.palette.background.paper, 0.85),
-              borderRadius: 1,
-              px: 1,
-              py: 0.5,
-              backdropFilter: 'blur(4px)'
-            }}
-          >
-            <AccessTime fontSize="small" sx={{ mr: 0.5, fontSize: '1rem' }} />
-            <Typography variant="caption" fontWeight="medium">
-              {recipe.cookingTime} mins
-            </Typography>
-          </Box>
-        </Box>
-
-        <CardContent sx={{ flexGrow: 1, pt: 2, pb: 1.5 }}>
+        <CardContent sx={{ p: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
           {/* Title */}
           <Typography 
             variant="h6" 
@@ -193,7 +215,7 @@ const RecipeCard = ({ recipe, loading = false }) => {
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
-              minHeight: 48
+              minHeight: 46
             }}
           >
             {recipe.title}
@@ -232,7 +254,7 @@ const RecipeCard = ({ recipe, loading = false }) => {
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
-              minHeight: 40
+              minHeight: 38
             }}
           >
             {recipe.description}
@@ -277,7 +299,7 @@ const RecipeCard = ({ recipe, loading = false }) => {
           
           {/* Chef/Author info */}
           {recipe.author && (
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 'auto', pt: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mt: 'auto' }}>
               <Avatar 
                 src={recipe.author.avatar} 
                 alt={recipe.author.name}
@@ -291,67 +313,71 @@ const RecipeCard = ({ recipe, loading = false }) => {
         </CardContent>
       </CardActionArea>
       
-      {/* Bottom section for dietary tags */}
-      {recipe.dietaryRestrictions?.length > 0 && (
-        <>
-          <Divider />
-          <CardActions sx={{ p: 1.5, pt: 1, display: 'flex', overflow: 'hidden' }}>
-            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'nowrap', overflow: 'hidden' }}>
-              {recipe.dietaryRestrictions?.slice(0, 2).map((diet) => (
-                <Tooltip key={diet} title={diet}>
-                  <Chip 
-                    label={diet} 
-                    size="small" 
-                    variant="outlined"
-                    sx={{ 
-                      height: 24, 
-                      fontSize: '0.7rem',
-                      fontWeight: 500,
-                      backgroundColor: alpha(theme.palette.primary.main, 0.05),
-                      borderColor: alpha(theme.palette.primary.main, 0.2)
-                    }}
-                  />
-                </Tooltip>
-              ))}
-              {recipe.dietaryRestrictions?.length > 2 && (
-                <Tooltip 
-                  title={recipe.dietaryRestrictions.slice(2).join(', ')}
-                  placement="top"
-                >
-                  <Chip 
-                    label={`+${recipe.dietaryRestrictions.length - 2}`} 
-                    size="small"
-                    sx={{ 
-                      height: 24, 
-                      fontSize: '0.7rem',
-                      fontWeight: 500
-                    }}
-                  />
-                </Tooltip>
-              )}
-            </Box>
-          </CardActions>
-        </>
-      )}
+      {/* Bottom section for dietary tags with fixed height */}
+      <Box sx={{ mt: 'auto' }}>
+        {recipe.dietaryRestrictions?.length > 0 && (
+          <>
+            <Divider />
+            <CardActions sx={{ p: 1.5, pt: 1, display: 'flex', overflow: 'hidden', height: 49 }}>
+              <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'nowrap', overflow: 'hidden' }}>
+                {recipe.dietaryRestrictions?.slice(0, 2).map((diet) => (
+                  <Tooltip key={diet} title={diet}>
+                    <Chip 
+                      label={diet} 
+                      size="small" 
+                      variant="outlined"
+                      sx={{ 
+                        height: 24, 
+                        fontSize: '0.7rem',
+                        fontWeight: 500,
+                        backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                        borderColor: alpha(theme.palette.primary.main, 0.2)
+                      }}
+                    />
+                  </Tooltip>
+                ))}
+                {recipe.dietaryRestrictions?.length > 2 && (
+                  <Tooltip 
+                    title={recipe.dietaryRestrictions.slice(2).join(', ')}
+                    placement="top"
+                  >
+                    <Chip 
+                      label={`+${recipe.dietaryRestrictions.length - 2}`} 
+                      size="small"
+                      sx={{ 
+                        height: 24, 
+                        fontSize: '0.7rem',
+                        fontWeight: 500
+                      }}
+                    />
+                  </Tooltip>
+                )}
+              </Box>
+            </CardActions>
+          </>
+        )}
+      </Box>
     </Card>
   );
 };
 
-// Loading state card
+// Loading state card with fixed dimensions
 const LoadingCard = () => {
   return (
     <Paper
       elevation={1}
       sx={{ 
-        height: '100%', 
+        width: 320,
+        height: 420,
         borderRadius: 2,
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column'
       }}
     >
-      <Skeleton variant="rectangular" height={180} animation="wave" />
-      <Box sx={{ p: 2 }}>
+      <Skeleton variant="rectangular" height={160} width={320} animation="wave" />
+      
+      <Box sx={{ p: 2, flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
         <Skeleton variant="text" height={32} width="80%" animation="wave" />
         <Box sx={{ display: 'flex', alignItems: 'center', my: 1.5 }}>
           <Skeleton variant="text" height={24} width={120} animation="wave" />
@@ -364,12 +390,13 @@ const LoadingCard = () => {
           <Skeleton variant="rectangular" height={24} width={60} animation="wave" sx={{ borderRadius: 1 }} />
         </Box>
         
-        <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mt: 'auto' }}>
           <Skeleton variant="circular" height={24} width={24} animation="wave" />
           <Skeleton variant="text" height={20} width={100} animation="wave" sx={{ ml: 1 }} />
         </Box>
       </Box>
-      <Box sx={{ p: 1.5, mt: 'auto' }}>
+      
+      <Box sx={{ p: 1.5, height: 49, mt: 'auto' }}>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Skeleton variant="rectangular" height={24} width={60} animation="wave" sx={{ borderRadius: 12 }} />
           <Skeleton variant="rectangular" height={24} width={60} animation="wave" sx={{ borderRadius: 12 }} />
